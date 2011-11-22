@@ -1,0 +1,17 @@
+<form action="/auth/browserid" method="post" style="display:none;">
+	<input type="text" name="assertion"/>
+</form>
+
+<img src="https://browserid.org/i/sign_in_red.png" id="browserid"/>
+<script>
+  $("#browserid").click(function(){
+    navigator.id.getVerifiedEmail(function(assertion) {
+      if (assertion) {
+        $("input").val(assertion);
+        $("form").submit();
+      } else {
+        location.reload();
+      }
+    });
+  });
+</script>
