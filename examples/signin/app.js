@@ -9,34 +9,33 @@ var express = require('express')
 //   serialize users into and deserialize users out of the session.  Typically,
 //   this will be as simple as storing the user ID when serializing, and finding
 //   the user by ID when deserializing.  However, since this example does not
-//   have a database of user records, the OpenID identifier is serialized and
-//   deserialized.
+//   have a database of user records, the BrowserID verified email address
+//   is serialized and deserialized.
 passport.serializeUser(function(user, done) {
-  done(null, user.identifier);
+  done(null, user.email);
 });
 
-passport.deserializeUser(function(identifier, done) {
-  done(null, { identifier: identifier });
+passport.deserializeUser(function(email, done) {
+  done(null, { email: email });
 });
 
 
-// Use the OpenIDStrategy within Passport.
+// Use the BrowserIDStrategy within Passport.
 //   Strategies in passport require a `validate` function, which accept
-//   credentials (in this case, an OpenID identifier), and invoke a callback
-//   with a user object.
+//   credentials (in this case, a BrowserID verified email address), and invoke
+//   a callback with a user object.
 passport.use(new BrowserIDStrategy({
-    returnURL: 'http://localhost:3000/auth/openid/return',
-    realm: 'http://localhost:3000/'
+    audience: 'http://127.0.0.1:3000'
   },
-  function(identifier, done) {
+  function(email, done) {
     // asynchronous verification, for effect...
     process.nextTick(function () {
       
-      // To keep the example simple, the user's OpenID identifier is returned to
+      // To keep the example simple, the user's email address is returned to
       // represent the logged-in user.  In a typical application, you would want
-      // to associate the OpenID identifier with a user record in your database,
-      // and return that user instead.
-      return done(null, { identifier: identifier })
+      // to associate the email address with a user record in your database, and
+      // return that user instead.
+      return done(null, { email: email })
     });
   }
 ));
@@ -78,22 +77,9 @@ app.get('/login', function(req, res){
 
 // POST /auth/browserid
 //   Use passport.authenticate() as route middleware to authenticate the
-//   request.  The first step in OpenID authentication will involve redirecting
-//   the user to their OpenID provider.  After authenticating, the OpenID
-//   provider will redirect the user back to this application at
-//   /auth/openid/return
+//   request.  BrowserID authentication will verify the assertion obtained from
+//   the browser via the JavaScript API.
 app.post('/auth/browserid', 
-  passport.authenticate('browserid', { failureRedirect: '/login' }),
-  function(req, res) {
-    res.redirect('/');
-  });
-
-// GET /auth/openid/return
-//   Use passport.authenticate() as route middleware to authenticate the
-//   request.  If authentication fails, the user will be redirected back to the
-//   login page.  Otherwise, the primary route function function will be called,
-//   which, in this example, will redirect the user to the home page.
-app.get('/auth/openid/return', 
   passport.authenticate('browserid', { failureRedirect: '/login' }),
   function(req, res) {
     res.redirect('/');
