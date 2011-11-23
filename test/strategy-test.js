@@ -42,7 +42,7 @@ vows.describe('BrowserIDStrategy').addBatch({
     },
   },
   
-  'strategy handling a request with a valid assertion': {
+  'strategy handling a request with an assertion that is verified': {
     topic: function() {
       var mockhttps = {
         request : function(options, callback) {
@@ -109,7 +109,7 @@ vows.describe('BrowserIDStrategy').addBatch({
     },
   },
   
-  'strategy handling a request with an assertion that fails verify': {
+  'strategy handling a request with an assertion that is not verified': {
     topic: function() {
       var mockhttps = {
         request : function(options, callback) {
@@ -163,6 +163,71 @@ vows.describe('BrowserIDStrategy').addBatch({
       },
       'should fail authentication' : function(err) {
         assert.isTrue(true);
+      },
+    },
+  },
+  
+  'strategy handling a request in which verify returns unexpected content': {
+    topic: function() {
+      var mockhttps = {
+        request : function(options, callback) {
+          var req = new MockRequest();
+          var res = new MockResponse();
+          
+          req.on('end', function(data, encoding) {
+            res.emit('data', '<html>\
+<head><title>411 Length Required</title></head> \
+<body bgcolor="white"> \
+<center><h1>411 Length Required</h1></center> \
+<hr><center>nginx/0.7.65</center> \
+</body> \
+</html>');
+            res.emit('end');
+          })
+          
+          callback(res);
+          return req;
+        }
+      }
+      
+      var strategy = new BrowserIDStrategy({
+          audience: 'https://www.example.com',
+          transport: mockhttps
+        },
+        function(email, done) {
+          done(null, { email: email });
+        }
+      );
+      return strategy;
+    },
+    
+    'after augmenting with actions': {
+      topic: function(strategy) {
+        var self = this;
+        var req = {};
+        req.body = {};
+        req.body['assertion'] = 'secret-assertion-data';
+        strategy.success = function(user) {
+          self.callback(new Error('should not be called'));
+        }
+        strategy.fail = function() {
+          self.callback(new Error('should not be called'));
+        }
+        strategy.error = function(err) {
+          self.callback(null, err);
+        }
+        
+        process.nextTick(function () {
+          strategy.authenticate(req);
+        });
+      },
+      
+      'should not call success or fail' : function(err, req) {
+        assert.isNull(err);
+      },
+      'should call error' : function(err, e) {
+        assert.isNotNull(e);
+        assert.instanceOf(e, Error);
       },
     },
   },
