@@ -232,6 +232,132 @@ vows.describe('BrowserIDStrategy').addBatch({
     },
   },
   
+  'strategy handling a request that is not validated': {
+    topic: function() {
+      var mockhttps = {
+        request : function(options, callback) {
+          var req = new MockRequest();
+          var res = new MockResponse();
+          
+          req.on('end', function(data, encoding) {
+            res.emit('data', JSON.stringify({
+              status: 'okay',
+              email: 'johndoe@example.net',
+              audience: 'https://www.example.com',
+              expires: 1322080163206,
+              issuer: 'browserid.org' })
+            );
+            res.emit('end');
+          })
+          
+          callback(res);
+          return req;
+        }
+      }
+      
+      var strategy = new BrowserIDStrategy({
+          audience: 'https://www.example.com',
+          transport: mockhttps
+        },
+        function(email, done) {
+          done(null, false);
+        }
+      );
+      return strategy;
+    },
+    
+    'after augmenting with actions': {
+      topic: function(strategy) {
+        var self = this;
+        var req = {};
+        req.body = {};
+        req.body['assertion'] = 'secret-assertion-data';
+        strategy.success = function(user) {
+          self.callback(new Error('should not be called'));
+        }
+        strategy.fail = function() {
+          self.callback(null);
+        }
+        
+        process.nextTick(function () {
+          strategy.authenticate(req);
+        });
+      },
+      
+      'should not call success' : function(err, req) {
+        assert.isNull(err);
+      },
+      'should call fail' : function(err) {
+        assert.isTrue(true);
+      },
+    },
+  },
+  
+  'strategy handling a request that encounters an error during validation': {
+    topic: function() {
+      var mockhttps = {
+        request : function(options, callback) {
+          var req = new MockRequest();
+          var res = new MockResponse();
+          
+          req.on('end', function(data, encoding) {
+            res.emit('data', JSON.stringify({
+              status: 'okay',
+              email: 'johndoe@example.net',
+              audience: 'https://www.example.com',
+              expires: 1322080163206,
+              issuer: 'browserid.org' })
+            );
+            res.emit('end');
+          })
+          
+          callback(res);
+          return req;
+        }
+      }
+      
+      var strategy = new BrowserIDStrategy({
+          audience: 'https://www.example.com',
+          transport: mockhttps
+        },
+        function(email, done) {
+          done(new Error('something went wrong'));
+        }
+      );
+      return strategy;
+    },
+    
+    'after augmenting with actions': {
+      topic: function(strategy) {
+        var self = this;
+        var req = {};
+        req.body = {};
+        req.body['assertion'] = 'secret-assertion-data';
+        strategy.success = function(user) {
+          self.callback(new Error('should not be called'));
+        }
+        strategy.fail = function() {
+          self.callback(new Error('should not be called'));
+        }
+        strategy.error = function(err) {
+          self.callback(null, err);
+        }
+        
+        process.nextTick(function () {
+          strategy.authenticate(req);
+        });
+      },
+      
+      'should not call success or fail' : function(err, req) {
+        assert.isNull(err);
+      },
+      'should call error' : function(err, e) {
+        assert.isNotNull(e);
+        assert.instanceOf(e, Error);
+      },
+    },
+  },
+  
   'strategy handling a request without a body': {
     topic: function() {
       var strategy = new BrowserIDStrategy({
