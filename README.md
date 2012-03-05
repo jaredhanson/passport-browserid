@@ -41,10 +41,6 @@ application:
         res.redirect('/');
       });
 
-#### Examples
-
-For a complete, working example, refer to the [signin example](https://github.com/jaredhanson/passport-browserid/tree/master/examples/signin).
-
 ## Implementation
 
 This module is implemented based on the specifications being developed by [Mozilla Identity](https://wiki.mozilla.org/Identity),
@@ -52,6 +48,17 @@ which remain a work-in-progress and are *not* final.  Implementers are
 encouraged to track the progress of these specifications and update update their
 implementations as necessary.  Furthermore, the implications of relying on
 non-final specifications should be understood prior to deployment.
+
+## Examples
+
+For a complete, working example, refer to the [signin example](https://github.com/jaredhanson/passport-browserid/tree/master/examples/signin).
+
+## Tests
+
+    $ npm install --dev
+    $ make test
+
+[![Build Status](https://secure.travis-ci.org/jaredhanson/passport-browserid.png)](http://travis-ci.org/jaredhanson/passport-browserid)
 
 ## Credits
 
