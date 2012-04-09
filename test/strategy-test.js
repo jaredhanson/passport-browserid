@@ -3,6 +3,8 @@ var assert = require('assert');
 var events = require('events');
 var util = require('util');
 var BrowserIDStrategy = require('passport-browserid/strategy');
+var BadRequestError = require('passport-browserid/errors/badrequesterror');
+var VerificationError = require('passport-browserid/errors/verificationerror');
 
 
 /* MockRequest */
@@ -150,7 +152,10 @@ vows.describe('BrowserIDStrategy').addBatch({
           self.callback(new Error('should not be called'));
         }
         strategy.fail = function() {
-          self.callback(null);
+          self.callback(new Error('should not be called'));
+        }
+        strategy.error = function(err) {
+          self.callback(null, err);
         }
         
         process.nextTick(function () {
@@ -161,8 +166,10 @@ vows.describe('BrowserIDStrategy').addBatch({
       'should not call succes' : function(err, req) {
         assert.isNull(err);
       },
-      'should fail authentication' : function(err) {
-        assert.isTrue(true);
+      'should error authentication' : function(err, e) {
+        assert.instanceOf(e, Error);
+        assert.instanceOf(e, VerificationError);
+        assert.equal(e.message, 'need assertion and audience');
       },
     },
   },
@@ -375,8 +382,8 @@ vows.describe('BrowserIDStrategy').addBatch({
         strategy.success = function(user) {
           self.callback(new Error('should not be called'));
         }
-        strategy.fail = function() {
-          self.callback(null);
+        strategy.fail = function(info) {
+          self.callback(null, info);
         }
         
         process.nextTick(function () {
@@ -389,6 +396,10 @@ vows.describe('BrowserIDStrategy').addBatch({
       },
       'should fail authentication' : function(err) {
         assert.isTrue(true);
+      },
+      'should pass BadReqestError as additional info' : function(err, info) {
+        assert.instanceOf(info, Error);
+        assert.instanceOf(info, BadRequestError);
       },
     },
   },
