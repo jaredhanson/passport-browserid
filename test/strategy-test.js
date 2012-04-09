@@ -111,6 +111,76 @@ vows.describe('BrowserIDStrategy').addBatch({
     },
   },
   
+  'strategy handling a request with an assertion that is verified with info': {
+    topic: function() {
+      var mockhttps = {
+        request : function(options, callback) {
+          var req = new MockRequest();
+          var res = new MockResponse();
+          
+          req.on('end', function(data, encoding) {
+            if (options.method === 'POST'
+                && options.headers['Content-Type'] === 'application/x-www-form-urlencoded'
+                && options.headers['Content-Length']
+                && data === 'assertion=secret-assertion-data&audience=https%3A%2F%2Fwww.example.com') {
+              res.emit('data', JSON.stringify({
+                status: 'okay',
+                email: 'johndoe@example.net',
+                audience: 'https://www.example.com',
+                expires: 1322080163206,
+                issuer: 'browserid.org' })
+              );
+              res.emit('end');
+            }
+          })
+          
+          callback(res);
+          return req;
+        }
+      }
+      
+      var strategy = new BrowserIDStrategy({
+          audience: 'https://www.example.com',
+          transport: mockhttps
+        },
+        function(email, done) {
+          done(null, { email: email }, { message: 'Welcome!' });
+        }
+      );
+      return strategy;
+    },
+    
+    'after augmenting with actions': {
+      topic: function(strategy) {
+        var self = this;
+        var req = {};
+        req.body = {};
+        req.body['assertion'] = 'secret-assertion-data';
+        strategy.success = function(user, info) {
+          req.user = user;
+          self.callback(null, req, info);
+        }
+        strategy.fail = function() {
+          self.callback(new Error('should not be called'));
+        }
+        
+        process.nextTick(function () {
+          strategy.authenticate(req);
+        });
+      },
+      
+      'should not call fail' : function(err, req) {
+        assert.isNull(err);
+      },
+      'should authenticate' : function(err, req) {
+        assert.equal(req.user.email, 'johndoe@example.net');
+      },
+      'should pass additional info' : function(err, user, info) {
+        assert.equal(info.message, 'Welcome!');
+      },
+    },
+  },
+  
   'strategy handling a request with an assertion that is not verified': {
     topic: function() {
       var mockhttps = {
@@ -296,6 +366,70 @@ vows.describe('BrowserIDStrategy').addBatch({
       },
       'should call fail' : function(err) {
         assert.isTrue(true);
+      },
+    },
+  },
+  
+  'strategy handling a request that is not validated with info': {
+    topic: function() {
+      var mockhttps = {
+        request : function(options, callback) {
+          var req = new MockRequest();
+          var res = new MockResponse();
+          
+          req.on('end', function(data, encoding) {
+            res.emit('data', JSON.stringify({
+              status: 'okay',
+              email: 'johndoe@example.net',
+              audience: 'https://www.example.com',
+              expires: 1322080163206,
+              issuer: 'browserid.org' })
+            );
+            res.emit('end');
+          })
+          
+          callback(res);
+          return req;
+        }
+      }
+      
+      var strategy = new BrowserIDStrategy({
+          audience: 'https://www.example.com',
+          transport: mockhttps
+        },
+        function(email, done) {
+          done(null, false, { message: 'Domain blacklisted.' });
+        }
+      );
+      return strategy;
+    },
+    
+    'after augmenting with actions': {
+      topic: function(strategy) {
+        var self = this;
+        var req = {};
+        req.body = {};
+        req.body['assertion'] = 'secret-assertion-data';
+        strategy.success = function(user) {
+          self.callback(new Error('should not be called'));
+        }
+        strategy.fail = function(info) {
+          self.callback(null, info);
+        }
+        
+        process.nextTick(function () {
+          strategy.authenticate(req);
+        });
+      },
+      
+      'should not call success' : function(err, req) {
+        assert.isNull(err);
+      },
+      'should call fail' : function(err) {
+        assert.isTrue(true);
+      },
+      'should pass additional info' : function(err, info) {
+        assert.equal(info.message, 'Domain blacklisted.');
       },
     },
   },
