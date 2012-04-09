@@ -4,7 +4,7 @@
 with [BrowserID](https://browserid.org/).
 
 This module lets you authenticate using BrowserID in your Node.js applications.
-By plugging into Passport, Twitter authentication can be easily and
+By plugging into Passport, BrowserID authentication can be easily and
 unobtrusively integrated into any application or framework that supports
 [Connect](http://www.senchalabs.org/connect/)-style middleware, including
 [Express](http://expressjs.com/).
