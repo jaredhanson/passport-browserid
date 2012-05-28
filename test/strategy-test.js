@@ -111,6 +111,78 @@ vows.describe('BrowserIDStrategy').addBatch({
     },
   },
   
+  'strategy handling a request with an assertion that is verified using req argument to callback': {
+    topic: function() {
+      var mockhttps = {
+        request : function(options, callback) {
+          var req = new MockRequest();
+          var res = new MockResponse();
+          
+          req.on('end', function(data, encoding) {
+            if (options.method === 'POST'
+                && options.headers['Content-Type'] === 'application/x-www-form-urlencoded'
+                && options.headers['Content-Length']
+                && data === 'assertion=secret-assertion-data&audience=https%3A%2F%2Fwww.example.com') {
+              res.emit('data', JSON.stringify({
+                status: 'okay',
+                email: 'johndoe@example.net',
+                audience: 'https://www.example.com',
+                expires: 1322080163206,
+                issuer: 'browserid.org' })
+              );
+              res.emit('end');
+            }
+          })
+          
+          callback(res);
+          return req;
+        }
+      }
+      
+      var strategy = new BrowserIDStrategy({
+          audience: 'https://www.example.com',
+          passReqToCallback: true,
+          transport: mockhttps
+        },
+        function(req, email, done) {
+          done(null, { foo: req.foo, email: email });
+        }
+      );
+      return strategy;
+    },
+    
+    'after augmenting with actions': {
+      topic: function(strategy) {
+        var self = this;
+        var req = {};
+        req.foo = 'bar';
+        req.body = {};
+        req.body['assertion'] = 'secret-assertion-data';
+        strategy.success = function(user) {
+          req.user = user;
+          self.callback(null, req);
+        }
+        strategy.fail = function() {
+          self.callback(new Error('should not be called'));
+        }
+        
+        process.nextTick(function () {
+          strategy.authenticate(req);
+        });
+      },
+      
+      'should not call fail' : function(err, req) {
+        assert.isNull(err);
+      },
+      'should authenticate' : function(err, req) {
+        assert.equal(req.user.email, 'johndoe@example.net');
+      },
+      'should have request details' : function(err, req) {
+        assert.equal(req.user.foo, 'bar');
+      },
+    },
+  },
+  
   'strategy handling a request with an assertion that is verified with info': {
     topic: function() {
       var mockhttps = {
