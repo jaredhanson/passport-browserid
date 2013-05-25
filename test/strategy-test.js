@@ -61,7 +61,7 @@ vows.describe('BrowserIDStrategy').addBatch({
                 email: 'johndoe@example.net',
                 audience: 'https://www.example.com',
                 expires: 1322080163206,
-                issuer: 'browserid.org' })
+                issuer: 'login.persona.org' })
               );
               res.emit('end');
             }
@@ -128,7 +128,7 @@ vows.describe('BrowserIDStrategy').addBatch({
                 email: 'johndoe@example.net',
                 audience: 'https://www.example.com',
                 expires: 1322080163206,
-                issuer: 'browserid.org' })
+                issuer: 'login.persona.org' })
               );
               res.emit('end');
             }
@@ -200,7 +200,7 @@ vows.describe('BrowserIDStrategy').addBatch({
                 email: 'johndoe@example.net',
                 audience: 'https://www.example.com',
                 expires: 1322080163206,
-                issuer: 'browserid.org' })
+                issuer: 'login.persona.org' })
               );
               res.emit('end');
             }
@@ -394,7 +394,7 @@ vows.describe('BrowserIDStrategy').addBatch({
               email: 'johndoe@example.net',
               audience: 'https://www.example.com',
               expires: 1322080163206,
-              issuer: 'browserid.org' })
+              issuer: 'login.persona.org' })
             );
             res.emit('end');
           })
@@ -455,7 +455,7 @@ vows.describe('BrowserIDStrategy').addBatch({
               email: 'johndoe@example.net',
               audience: 'https://www.example.com',
               expires: 1322080163206,
-              issuer: 'browserid.org' })
+              issuer: 'login.persona.org' })
             );
             res.emit('end');
           })
@@ -519,7 +519,7 @@ vows.describe('BrowserIDStrategy').addBatch({
               email: 'johndoe@example.net',
               audience: 'https://www.example.com',
               expires: 1322080163206,
-              issuer: 'browserid.org' })
+              issuer: 'login.persona.org' })
             );
             res.emit('end');
           })

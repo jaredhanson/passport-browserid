@@ -1,7 +1,7 @@
 # Passport-BrowserID
 
 [Passport](https://github.com/jaredhanson/passport) strategy for authenticating
-with [BrowserID](https://browserid.org/).
+with [BrowserID](https://login.persona.org/).
 
 This module lets you authenticate using BrowserID in your Node.js applications.
 By plugging into Passport, BrowserID authentication can be easily and
