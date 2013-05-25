@@ -1,13 +1,20 @@
 # Passport-BrowserID
 
 [Passport](https://github.com/jaredhanson/passport) strategy for authenticating
-with [BrowserID](https://login.persona.org/).
+with [BrowserID](https://developer.mozilla.org/en-US/docs/Mozilla/Persona).
 
 This module lets you authenticate using BrowserID in your Node.js applications.
 By plugging into Passport, BrowserID authentication can be easily and
 unobtrusively integrated into any application or framework that supports
 [Connect](http://www.senchalabs.org/connect/)-style middleware, including
 [Express](http://expressjs.com/).
+
+[BrowserID](https://developer.mozilla.org/en-US/docs/Mozilla/Persona) is an
+open, decentralized protocol for authenticating users based on email addresses,
+developed by [Mozilla](http://www.mozilla.org/).  It is commonly associated with
+[Persona](https://login.persona.org/), the brand used for Mozilla's
+implementation of BrowserID.  This strategy performs local verification of
+assertions, delivering on BrowserID's promise of ensuring user privacy.
 
 ## Install
 
@@ -54,6 +61,10 @@ which remain a work-in-progress and are *not* final.  Implementers are
 encouraged to track the progress of these specifications and update update their
 implementations as necessary.  Furthermore, the implications of relying on
 non-final specifications should be understood prior to deployment.
+
+While the specifications remain under development, it is recommended to use
+Mozilla's [Remote Verification API](https://developer.mozilla.org/en-US/docs/Mozilla/Persona/Remote_Verification_API).
+This functionality is implemented by [passport-persona](https://github.com/jaredhanson/passport-persona).
 
 ## Examples
 
