@@ -2,11 +2,7 @@
   "name": "passport-browserid",
   "version": "0.1.3",
   "description": "BrowserID authentication strategy for Passport.",
-  "author": { "name": "Jared Hanson", "email": "jaredhanson@gmail.com", "url": "http://www.jaredhanson.net/" },
-  "contributors": [ 
-    { "name": "Jared Hanson", "email": "jaredhanson@gmail.com" },
-    { "name": "Leo McArdle", "email": "leomcardle@gmail.com" }
-  ],
+  "keywords": ["passport", "browserid", "auth", "authn", "authentication", "identity"],
   "repository": {
     "type": "git",
     "url": "git://github.com/jaredhanson/passport-browserid.git"
@@ -14,6 +10,19 @@
   "bugs": {
     "url": "http://github.com/jaredhanson/passport-browserid/issues"
   },
+  "author": {
+    "name": "Jared Hanson",
+    "email": "jaredhanson@gmail.com",
+    "url": "http://www.jaredhanson.net/"
+  },
+  "contributors": [ 
+    { "name": "Jared Hanson", "email": "jaredhanson@gmail.com" },
+    { "name": "Leo McArdle", "email": "leomcardle@gmail.com" }
+  ],
+  "licenses": [ {
+    "type": "MIT",
+    "url": "http://www.opensource.org/licenses/MIT" 
+  } ],
   "main": "./lib/passport-browserid",
   "dependencies": {
     "pkginfo": "0.2.x",
@@ -25,10 +34,5 @@
   "scripts": {
     "test": "NODE_PATH=lib node_modules/.bin/vows test/*-test.js"
   },
-  "engines": { "node": ">= 0.4.0" },
-  "licenses": [ {
-    "type": "MIT",
-    "url": "http://www.opensource.org/licenses/MIT" 
-  } ],
-  "keywords": ["passport", "browserid", "auth", "authn", "authentication", "identity"]
+  "engines": { "node": ">= 0.4.0" }
 }
