@@ -5,7 +5,7 @@
 <img src="https://mdn.mozillademos.org/files/3967/plain_sign_in_black.png" id="browserid"/>
 <script>
   $("#browserid").click(function(){
-    navigator.id.getVerifiedEmail(function(assertion) {
+    navigator.id.get(function(assertion) {
       if (assertion) {
         $("input").val(assertion);
         $("form").submit();
