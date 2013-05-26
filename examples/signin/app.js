@@ -1,7 +1,7 @@
 var express = require('express')
   , passport = require('passport')
   , util = require('util')
-  , BrowserIDStrategy = require('passport-browserid').Strategy;
+  , BrowserIDStrategy = require('../..').Strategy;
 
 
 // Passport session setup.
