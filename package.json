@@ -26,7 +26,8 @@
   "main": "./lib/passport-browserid",
   "dependencies": {
     "pkginfo": "0.2.x",
-    "passport": "~0.1.3"
+    "passport": "~0.1.3",
+    "browserid-verify": "~0.1.2"
   },
   "devDependencies": {
     "vows": "0.6.x"
