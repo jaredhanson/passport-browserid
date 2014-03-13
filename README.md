@@ -22,15 +22,17 @@ email address ownership, obtained via the BrowserID JavaScript API.  The
 strategy requires a `validate` callback, which accepts an email address and calls
 `done` providing a user.
 
-    passport.use(new BrowserIDStrategy({
-        audience: 'http://www.example.com'
-      },
-      function(email, done) {
-        User.findByEmail({ email: email }, function (err, user) {
-          return done(err, user);
-        });
-      }
-    ));
+```javascript
+passport.use(new BrowserIDStrategy({
+    audience: 'http://www.example.com'
+  },
+  function(email, done) {
+    User.findByEmail({ email: email }, function (err, user) {
+      return done(err, user);
+    });
+  }
+));
+```
 
 #### Authenticate Requests
 
@@ -40,12 +42,14 @@ authenticate requests.
 For example, as route middleware in an [Express](http://expressjs.com/)
 application:
 
-    app.post('/auth/browserid', 
-      passport.authenticate('browserid', { failureRedirect: '/login' }),
-      function(req, res) {
-        // Successful authentication, redirect home.
-        res.redirect('/');
-      });
+```javascript
+app.post('/auth/browserid', 
+  passport.authenticate('browserid', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/');
+  });
+```
 
 ## Implementation
 
