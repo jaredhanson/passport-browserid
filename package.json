@@ -42,8 +42,7 @@
   "main": "./lib",
   "dependencies": {
     "browserid-crypto": "^0.9.0",
-    "passport": "~0.1.3",
-    "pkginfo": "0.2.x"
+    "passport-strategy": "1.x.x"
   },
   "devDependencies": {
     "make-node": "0.3.x",
