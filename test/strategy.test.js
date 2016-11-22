@@ -324,6 +324,203 @@ describe('Strategy', function() {
     });
   }); // handling a request with an assertion that is verified by email and yeilds info
   
+  describe('handling a request with an assertion that is verified by email, in passReqToCallbackMode', function() {
+    this.timeout(10000);
+    
+    var clock;
+    
+    before(function() {
+      clock = sinon.useFakeTimers(1479747579866 - 1000);
+    });
+  
+    after(function() {
+      clock.restore();
+    });
+    
+    
+    var user
+      , info;
+    
+    var strategy = new BrowserIDStrategy({
+        audience: 'http://localhost:8080',
+        passReqToCallback: true,
+        httpRequest: function(domain, path, cb) {
+          expect(domain).to.equal('mockmyid.com');
+          expect(path).to.equal('/.well-known/browserid?domain=mockmyid.com');
+          
+          var headers = {
+            server: 'nginx/1.6.1',
+            date: 'Mon, 21 Nov 2016 18:29:48 GMT',
+            'content-type': 'application/json',
+            'content-length': '1025',
+            'last-modified': 'Tue, 09 Sep 2014 15:01:47 GMT',
+            connection: 'close',
+            etag: '"540f165b-401"',
+            expires: 'Mon, 21 Nov 2016 19:29:48 GMT',
+            'cache-control': 'max-age=3600',
+            'accept-ranges': 'bytes',
+            'strict-transport-security': 'max-age=16000000; preload;'
+          };
+          var body = fs.readFileSync(__dirname + '/fixtures/mockmyid.com/browserid', 'utf8');
+          return cb(null, 200, headers, body);
+        }
+      },
+      function(req, email, done) {
+        expect(req.method).to.equal('POST');
+        
+        done(null, { email: email });
+      }
+    );
+    
+    before(function(done) {
+      sinon.spy(strategy._browserID, 'lookup');
+      
+      chai.passport.use(strategy)
+        .success(function(u, i) {
+          user = u;
+          info = i;
+          done();
+        })
+        .req(function(req) {
+          req.method = 'POST';
+          req.body = {};
+          req.body['assertion'] = JOHN_MOCKMYIDCOM_ASSERTION;
+        })
+        .error(function(err) {
+          done(err);
+        })
+        .authenticate();
+    });
+    
+    after(function() {
+      strategy._browserID.lookup.restore();
+    });
+
+    it('should call Verifier#lookup to obtain details about issuer', function() {
+      expect(strategy._browserID.lookup).to.have.been.calledTwice;
+      var call = strategy._browserID.lookup.getCall(0);
+      expect(call.args[0]).to.be.an('object');
+      expect(call.args[0].domain).to.equal('mockmyid.com');
+      expect(call.args[0].principalDomain).to.equal('mockmyid.com');
+    });
+    
+    it('should call Verifier#lookup to obtain details about authority for princial domain', function() {
+      expect(strategy._browserID.lookup).to.have.been.calledTwice;
+      var call = strategy._browserID.lookup.getCall(1);
+      expect(call.args[0]).to.be.an('object');
+      expect(call.args[0].domain).to.equal('mockmyid.com');
+      expect(call.args[0].principalDomain).to.equal('mockmyid.com');
+    });
+
+    it('should yield user', function() {
+      expect(user).to.be.an.object;
+      expect(user.email).to.equal('john@mockmyid.com');
+    });
+    
+    it('should not yield info', function() {
+      expect(info).to.be.undefined;
+    });
+  }); // handling a request with an assertion that is verified by email, in passReqToCallbackMode
+  
+  describe('handling a request with an assertion that is verified by email and issuer, in passReqToCallbackMode', function() {
+    this.timeout(10000);
+    
+    var clock;
+    
+    before(function() {
+      clock = sinon.useFakeTimers(1479747579866 - 1000);
+    });
+  
+    after(function() {
+      clock.restore();
+    });
+    
+    
+    var user
+      , info;
+    
+    var strategy = new BrowserIDStrategy({
+        audience: 'http://localhost:8080',
+        passReqToCallback: true,
+        httpRequest: function(domain, path, cb) {
+          expect(domain).to.equal('mockmyid.com');
+          expect(path).to.equal('/.well-known/browserid?domain=mockmyid.com');
+          
+          var headers = {
+            server: 'nginx/1.6.1',
+            date: 'Mon, 21 Nov 2016 18:29:48 GMT',
+            'content-type': 'application/json',
+            'content-length': '1025',
+            'last-modified': 'Tue, 09 Sep 2014 15:01:47 GMT',
+            connection: 'close',
+            etag: '"540f165b-401"',
+            expires: 'Mon, 21 Nov 2016 19:29:48 GMT',
+            'cache-control': 'max-age=3600',
+            'accept-ranges': 'bytes',
+            'strict-transport-security': 'max-age=16000000; preload;'
+          };
+          var body = fs.readFileSync(__dirname + '/fixtures/mockmyid.com/browserid', 'utf8');
+          return cb(null, 200, headers, body);
+        }
+      },
+      function(req, email, issuer, done) {
+        expect(req.method).to.equal('POST');
+        
+        done(null, { email: email, issuer: issuer });
+      }
+    );
+    
+    before(function(done) {
+      sinon.spy(strategy._browserID, 'lookup');
+      
+      chai.passport.use(strategy)
+        .success(function(u, i) {
+          user = u;
+          info = i;
+          done();
+        })
+        .req(function(req) {
+          req.method = 'POST';
+          req.body = {};
+          req.body['assertion'] = JOHN_MOCKMYIDCOM_ASSERTION;
+        })
+        .error(function(err) {
+          done(err);
+        })
+        .authenticate();
+    });
+    
+    after(function() {
+      strategy._browserID.lookup.restore();
+    });
+
+    it('should call Verifier#lookup to obtain details about issuer', function() {
+      expect(strategy._browserID.lookup).to.have.been.calledTwice;
+      var call = strategy._browserID.lookup.getCall(0);
+      expect(call.args[0]).to.be.an('object');
+      expect(call.args[0].domain).to.equal('mockmyid.com');
+      expect(call.args[0].principalDomain).to.equal('mockmyid.com');
+    });
+    
+    it('should call Verifier#lookup to obtain details about authority for princial domain', function() {
+      expect(strategy._browserID.lookup).to.have.been.calledTwice;
+      var call = strategy._browserID.lookup.getCall(1);
+      expect(call.args[0]).to.be.an('object');
+      expect(call.args[0].domain).to.equal('mockmyid.com');
+      expect(call.args[0].principalDomain).to.equal('mockmyid.com');
+    });
+
+    it('should yield user', function() {
+      expect(user).to.be.an.object;
+      expect(user.email).to.equal('john@mockmyid.com');
+      expect(user.issuer).to.equal('mockmyid.com');
+    });
+    
+    it('should not yield info', function() {
+      expect(info).to.be.undefined;
+    });
+  }); // handling a request with an assertion that is verified by email and issuer, in passReqToCallbackMode
+  
   describe('handling a request with an assertion for a gmail.com address issued by Mozilla Persona', function() {
     this.timeout(10000);
     
