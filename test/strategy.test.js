@@ -836,6 +836,76 @@ describe('Strategy', function() {
     });
   }); // failing authentication due to expired assertion
   
+  describe('failing authentication due to missing assertion', function() {
+    this.timeout(10000);
+    
+    var clock;
+    
+    before(function() {
+      clock = sinon.useFakeTimers(1479841275063);
+    });
+  
+    after(function() {
+      clock.restore();
+    });
+    
+    
+    var info
+      , status;
+    
+    var strategy = new BrowserIDStrategy({
+        audience: 'http://example.com:8080',
+        httpRequest: function(domain, path, cb) {
+          expect(domain).to.equal('mockmyid.com');
+          expect(path).to.equal('/.well-known/browserid?domain=mockmyid.com');
+          
+          var headers = {
+            server: 'nginx/1.6.1',
+            date: 'Mon, 21 Nov 2016 18:29:48 GMT',
+            'content-type': 'application/json',
+            'content-length': '1025',
+            'last-modified': 'Tue, 09 Sep 2014 15:01:47 GMT',
+            connection: 'close',
+            etag: '"540f165b-401"',
+            expires: 'Mon, 21 Nov 2016 19:29:48 GMT',
+            'cache-control': 'max-age=3600',
+            'accept-ranges': 'bytes',
+            'strict-transport-security': 'max-age=16000000; preload;'
+          };
+          var body = fs.readFileSync(__dirname + '/fixtures/mockmyid.com/browserid', 'utf8');
+          return cb(null, 200, headers, body);
+        }
+      },
+      function(email, done) {
+        done(null, false);
+      }
+    );
+    
+    before(function(done) {
+      sinon.spy(strategy._browserID, 'lookup');
+      
+      chai.passport.use(strategy)
+        .fail(function(i, s) {
+          info = i;
+          status = s;
+          done();
+        })
+        .req(function(req) {
+          req.body = {};
+        })
+        .error(function(err) {
+          done(err);
+        })
+        .authenticate();
+    });
+    
+    it('should fail with info and status', function() {
+      expect(info).to.be.an.object;
+      expect(info.message).to.equal('Missing assertion');
+      expect(status).to.equal(400);
+    });
+  }); // failing authentication due to missing assertion
+  
   describe('encountering an error during application-layer identity verification', function() {
     this.timeout(10000);
     

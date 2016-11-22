@@ -41,7 +41,6 @@
   ],
   "main": "./lib",
   "dependencies": {
-    "browserid-crypto": "^0.9.0",
     "browserid-local-verify": "^0.5.0",
     "passport-strategy": "1.x.x"
   },
