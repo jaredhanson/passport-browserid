@@ -1,4 +1,10 @@
-# Passport-BrowserID
+# passport-browserid
+
+[![Build](https://img.shields.io/travis/jaredhanson/passport-browserid.svg)](https://travis-ci.org/jaredhanson/passport-browserid)
+[![Coverage](https://img.shields.io/coveralls/jaredhanson/passport-browserid.svg)](https://coveralls.io/r/jaredhanson/passport-browserid)
+[![Quality](https://img.shields.io/codeclimate/github/jaredhanson/passport-browserid.svg?label=quality)](https://codeclimate.com/github/jaredhanson/passport-browserid)
+[![Dependencies](https://img.shields.io/david/jaredhanson/passport-browserid.svg)](https://david-dm.org/jaredhanson/passport-browserid)
+
 
 [Passport](https://github.com/jaredhanson/passport) strategy for authenticating
 with [BrowserID](https://developer.mozilla.org/en-US/docs/Mozilla/Persona).
