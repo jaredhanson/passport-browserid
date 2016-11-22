@@ -26,15 +26,15 @@ assertions, delivering on BrowserID's promise of ensuring user privacy.
 
 The BrowserID authentication strategy authenticates users using an assertion of
 email address ownership, obtained via the BrowserID JavaScript API.  The
-strategy requires a `validate` callback, which accepts an email address and calls
-`done` providing a user.
+strategy requires a `verify` callback, which accepts an email address and calls
+`cb` providing a user.
 
     passport.use(new BrowserIDStrategy({
         audience: 'http://www.example.com'
       },
-      function(email, done) {
+      function(email, cb) {
         User.findByEmail({ email: email }, function (err, user) {
-          return done(err, user);
+          return cb(err, user);
         });
       }
     ));
@@ -54,7 +54,9 @@ application:
         res.redirect('/');
       });
 
-## Implementation
+## Considerations
+
+#### Deployment
 
 This module is implemented based on the specifications being developed by [Mozilla Identity](https://wiki.mozilla.org/Identity),
 which remain a work-in-progress and are *not* final.  Implementers are
@@ -70,12 +72,41 @@ This functionality is implemented by [passport-persona](https://github.com/jared
 
 For a complete, working example, refer to the [signin example](https://github.com/jaredhanson/passport-browserid/tree/master/examples/signin).
 
-## Tests
+## Contributing
 
-    $ npm install --dev
-    $ make test
+#### Tests
 
-[![Build Status](https://secure.travis-ci.org/jaredhanson/passport-browserid.png)](http://travis-ci.org/jaredhanson/passport-browserid)
+The test suite is located in the `test/` directory.  All new features are
+expected to have corresponding test cases.  Ensure that the complete test suite
+passes by executing:
+
+```bash
+$ make test
+```
+
+#### Coverage
+
+All new feature development is expected to have test coverage.  Patches that
+increse test coverage are happily accepted.  Coverage reports can be viewed by
+executing:
+
+```bash
+$ make test-cov
+$ make view-cov
+```
+
+## Support
+
+#### Funding
+
+This software is provided to you as open source, free of charge.  The time and
+effort to develop and maintain this project is volunteered by [@jaredhanson](https://github.com/jaredhanson).
+If you (or your employer) benefit from this project, please consider a financial
+contribution.  Your contribution helps continue the efforts that produce this
+and other open source software.
+
+Funds are accepted via [PayPal](https://paypal.me/jaredhanson), [Venmo](https://venmo.com/jaredhanson),
+and [other](http://jaredhanson.net/pay) methods.  Any amount is appreciated.
 
 ## Credits
 
@@ -86,4 +117,4 @@ For a complete, working example, refer to the [signin example](https://github.co
 
 [The MIT License](http://opensource.org/licenses/MIT)
 
-Copyright (c) 2011-2013 Jared Hanson <[http://jaredhanson.net/](http://jaredhanson.net/)>
+Copyright (c) 2011-2016 Jared Hanson <[http://jaredhanson.net/](http://jaredhanson.net/)>
