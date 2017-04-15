@@ -66,7 +66,7 @@ application:
 
 This module is implemented based on the specifications being developed by [Mozilla Identity](https://wiki.mozilla.org/Identity),
 which remain a work-in-progress and are *not* final.  Implementers are
-encouraged to track the progress of these specifications and update update their
+encouraged to track the progress of these specifications and update their
 implementations as necessary.  Furthermore, the implications of relying on
 non-final specifications should be understood prior to deployment.
 
