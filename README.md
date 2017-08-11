@@ -62,7 +62,7 @@ application:
 
 ## Considerations
 
-#### Deployment
+#### Specification
 
 This module is implemented based on the specifications being developed by [Mozilla Identity](https://wiki.mozilla.org/Identity),
 which remain a work-in-progress and are *not* final.  Implementers are
