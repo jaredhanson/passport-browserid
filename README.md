@@ -123,4 +123,4 @@ and [other](http://jaredhanson.net/pay) methods.  Any amount is appreciated.
 
 [The MIT License](http://opensource.org/licenses/MIT)
 
-Copyright (c) 2011-2016 Jared Hanson <[http://jaredhanson.net/](http://jaredhanson.net/)>
+Copyright (c) 2011-2017 Jared Hanson <[http://jaredhanson.net/](http://jaredhanson.net/)>
